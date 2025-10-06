@@ -1,5 +1,18 @@
+#include <WiFi.h>
+
+const String SSID = "FIESC_IOT_EDU";
+const String PASS = "812gv08";
+
 void setup() {
-  // put your setup code here, to run once:
+  Serial.begin(115200);
+  Serial.println("Coemctando ao WiFi");
+  WiFi.begin(SSID,PASS);
+  while(WiFi.status() != WL_CONNECTED){
+    Serial.print(".");
+    delay(200);
+  }
+  Serial.println("\nConectado com sucesso!");
+
 
 }
 
