@@ -12,9 +12,13 @@ const String URL   = "test.mosquitto.org";
 const int PORT     = 1883;
 const String USR   = "";
 const String broker_PASS  = "";
-const String Topic = "DSM1";
+const String MyTopic = "rogui";
+const String OtherTopic = "pega";
+
+int ledPin = 2;
 
 void setup() {
+  pinMode(ledPin, OUTPUT);
   Serial.begin(115200);
   Serial.println("Conectando WiFi");
   WiFi.begin(SSID,PASS);
@@ -32,14 +36,32 @@ void setup() {
     Serial.print(".");
     delay(200);
   }
+  mqtt.subscribe(MyTopic.c_str());
+  mqtt.setCallback(callback);
   Serial.println("\nConectado com sucesso ao broker !");
 }
 
 void loop() {
   String mensagem = "Rodrigo: ";
-  mensagem += "Oi";
-
-  mqtt.publish(Topic.c_str(),mensagem.c_str());
+  if (Serial.available()>0){
+    mensagem += Serial.readStringUntil('\n');
+    mqtt.publish(OtherTopic.c_str(),mensagem.c_str());
+  }
   mqtt.loop();
   delay(1000);
+}
+
+void callback(char* topic, byte* payload, unsigned int length){
+  String mensagem = "";
+  for(int i = 0; i < length; i++){
+    mensagem += (char)payload[i];
+  }
+  Serial.print("Recebido: ");
+  Serial.println(mensagem);
+  if (mensagem == "Pedro: liga led" || mensagem == "Gabriel: liga led"){
+    digitalWrite(ledPin, HIGH);
+  } 
+  if (mensagem == "Pedro: desliga led" || mensagem == "Gabriel: desliga led"){
+    digitalWrite(ledPin, LOW);
+  }
 }
