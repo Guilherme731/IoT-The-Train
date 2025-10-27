@@ -34,6 +34,8 @@ void setup() {
     Serial.print(".");
     delay(200);
   }
+  mqtt.subscribe("TopicoGuilherme");
+  mqtt.setCallback(callback);
   Serial.println("\nConectado com sucesso ao broker!");
 }
 
@@ -44,4 +46,13 @@ void loop() {
   mqtt.publish(Topic.c_str(), mensagem.c_str());
   mqtt.loop();
   delay(1000);
+}
+
+void callback(char* topic, byte* payload, unsigned int length){
+  String mensagem = "";
+  for(int i = 0; i < length; i++){
+    mensagem += (char)payload[i];
+  }
+  Serial.print("Recebido: ");
+  Serial.println(mensagem);
 }
