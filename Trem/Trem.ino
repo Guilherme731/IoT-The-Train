@@ -1,19 +1,23 @@
 #include <WiFi.h> 
+#include <WiFiClientSecure.h> 
 #include <PubSubClient.h>
 
-WiFiClient client;
+//constantes p/ trem
+const byte resistorPin = 13;
+const byte caboPin = 12;
+
+WiFiClientSecure client;
 PubSubClient mqtt(client);
 
 const String SSID = "FIESC_IOT_EDU";
 const String PASS = "8120gv08";
 
 //constantes p/ broker
-const String URL   = "test.mosquitto.org";
-const int PORT     = 1883;
-const String USR   = "";
-const String broker_PASS  = "";
-const String MyTopic = "rogui";
-const String OtherTopic = "pega";
+const String URL   = "8b46e29e75014bcba8465b77629b065c.s1.eu.hivemq.cloud";
+const int PORT     = 8883;
+const String USR   = "thetrain_esp";
+const String broker_PASS  = "Thetrain123";
+const String MyTopic = "teste";
 
 int ledPin = 2;
 
@@ -27,6 +31,7 @@ void setup() {
     delay(200);
   }
   Serial.println("\n Conectado com sucesso!");
+  client.setInsecure();
   Serial.println("Conectando ao Broker");
   mqtt.setServer(URL.c_str(),PORT);
   while(!mqtt.connected()){
@@ -42,11 +47,6 @@ void setup() {
 }
 
 void loop() {
-  String mensagem = "Rodrigo: ";
-  if (Serial.available()>0){
-    mensagem += Serial.readStringUntil('\n');
-    mqtt.publish(OtherTopic.c_str(),mensagem.c_str());
-  }
   mqtt.loop();
   delay(1000);
 }
@@ -58,6 +58,15 @@ void callback(char* topic, byte* payload, unsigned int length){
   }
   Serial.print("Recebido: ");
   Serial.println(mensagem);
+
+  if (mensagem > 0) {
+    digitalWrite(resistorPin, HIGH);
+  }
+
+  if (mensagem < 0) {
+    digitalWrite(caboPin, LOW);
+  }
+
   if (mensagem == "Pedro: liga led" || mensagem == "Gabriel: liga led"){
     digitalWrite(ledPin, HIGH);
   } 
