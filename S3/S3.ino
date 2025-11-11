@@ -11,14 +11,21 @@ const String PASS = "8120gv08";
 
 const byte pin_led = 23;
 
+//Nome dos servos
+Servo servo_superior; // pin 21
+Servo servo_inferior; // pin 22
+
+
+byte pos_S1 = 120;
+
 //constantes p/ broker
 const String URL   = "8b46e29e75014bcba8465b77629b065c.s1.eu.hivemq.cloud";
 const int PORT     = 8883;
 const String USR   = "thetrain_esp";
 const String broker_PASS  = "Thetrain123";
-const String servo1_topic = "Servo1";
-const String servo2_topic = "Servo2";
-const String presenca_topic = "Presenca";
+const String servo1_topic = "S3/Servo1";
+const String servo2_topic = "S3/Servo2";
+const String presenca_topic = "S3/Presenca";
 const String presenca = "Presenca";
 
 const String Presenca1Topic = "Presenca1";
@@ -29,7 +36,6 @@ const int pinTrig = 32;
 const int pinEcho = 33;
 float distancia;
 
-Servo servo_1;
 
  void setup() {
   Serial.begin(115200);
@@ -54,13 +60,21 @@ Servo servo_1;
   mqtt.setCallback(callBack);
   Serial.println("\nConectado com sucesso !");
 
+  mqtt.subscribe(S2/Presenca1.c_str());
+  mqtt.setCallback(callBack);
+  Serial.println("\nConectado com sucesso !");
+
+  mqtt.subscribe(S2/Presenca2.c_str());
+  mqtt.setCallback(callBack);
+  Serial.println("\nConectado com sucesso !");
+
   pinMode(pin_led,OUTPUT);
 
   pinMode(pinTrig, OUTPUT);
   pinMode(pinEcho, INPUT);
 
-  servo_1.attach(2);
-  servo_1.write(0);
+  servo_superior.attach(21);
+  servo_inferior.attach(22);
 
 }
 
@@ -82,41 +96,28 @@ void callBack(char* topic, byte* payload, unsigned int length){
     mensagem += (char)payload[i];
   }
   if(String(topic) == "S1/Iluminacao"){
-  if(mensagem == "1"){
-    digitalWrite(pin_led, HIGH);
-  }
-  if(mensagem == "0"){
-    digitalWrite(pin_led, LOW);
-  }
+    if(mensagem == "1"){
+      digitalWrite(pin_led, HIGH);
+    }
+      if(mensagem == "0"){
+        digitalWrite(pin_led, LOW);
+      }
   }
 
-  
+  if(topic == "S2/presenca2" && mensagem == true){
+    servo_inferior.write(120);
+  }else if(topic == "S3/Presenca" && pos_S1 == 120 && mensagem == true){
+    servo_superior.write(60);
+    pos_S1 = 60;
+  }else if(topic == "S3/Presenca" && pos_S1 == 60 && mensagem == true){
+    servo_superior.write(120);
+    pos_S1 = 120;
+  }else if(topic == "S2/Presenca1" && mensagem == true){
+    servo_inferior.write(60);
+  }
+
 }
 
-
-void medirDistancia(){
-  digitalWrite(pinTrig, LOW);
-  delay(0005);
-  digitalWrite(pinTrig, HIGH);
-  delay(0010);
-  digitalWrite(pinTrig, LOW);
-
-  distancia = pulseIn (pinEcho, HIGH);
-  distancia = distancia/58;
-  Serial.println (distancia);
-  
-  if(distancia < 50){
-
-  }
-}
-
-
-void moverServo(){
-  for(int i=0; i<=180; i=+90){
-    servo_1.write(i);
-    delay(100);
-  }
-}
 
 
 
