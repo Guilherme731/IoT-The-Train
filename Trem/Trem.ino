@@ -3,8 +3,10 @@
 #include <PubSubClient.h>
 
 //constantes p/ trem
-const byte resistorPin = 13;
-const byte caboPin = 12;
+const byte resistorPin = 12;
+const byte caboPin = 13;
+
+int mensagem = 0;
 
 WiFiClientSecure client;
 PubSubClient mqtt(client);
@@ -17,12 +19,13 @@ const String URL   = "8b46e29e75014bcba8465b77629b065c.s1.eu.hivemq.cloud";
 const int PORT     = 8883;
 const String USR   = "thetrain_esp";
 const String broker_PASS  = "Thetrain123";
-const String MyTopic = "teste";
+const String MyTopic = "Trem/Vel";
 
 int ledPin = 2;
 
 void setup() {
-  pinMode(ledPin, OUTPUT);
+  pinMode(resistorPin, OUTPUT);
+  pinMode(caboPin, OUTPUT);
   Serial.begin(115200);
   Serial.println("Conectando WiFi");
   WiFi.begin(SSID,PASS);
@@ -59,18 +62,17 @@ void callback(char* topic, byte* payload, unsigned int length){
   Serial.print("Recebido: ");
   Serial.println(mensagem);
 
-  if (mensagem > 0) {
+  if (mensagem == "Frente") {
     digitalWrite(resistorPin, HIGH);
-  }
+    digitalWrite(caboPin, LOW);
 
-  if (mensagem < 0) {
+  } else if (mensagem == "Tras") {
+    digitalWrite(resistorPin, LOW);
+    digitalWrite(caboPin, HIGH);
+
+  }else if(mensagem == "Para"){
+    digitalWrite(resistorPin, LOW);
     digitalWrite(caboPin, LOW);
   }
 
-  if (mensagem == "Pedro: liga led" || mensagem == "Gabriel: liga led"){
-    digitalWrite(ledPin, HIGH);
-  } 
-  if (mensagem == "Pedro: desliga led" || mensagem == "Gabriel: desliga led"){
-    digitalWrite(ledPin, LOW);
-  }
 }
