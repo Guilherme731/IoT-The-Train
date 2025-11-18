@@ -10,11 +10,11 @@ PubSubClient mqtt(client);
 const String SSID = "FIESC_IOT_EDU";
 const String PASS = "8120gv08";
 
-const byte pin_led = 23;
+const byte pin_led = 25;
 
 //Nome dos servos
-Servo servo_superior; // pin 21
-Servo servo_inferior; // pin 19
+Servo servo_superior; // pin 23
+Servo servo_inferior; // pin 22
 
 
 byte pos_S1 = 120;
@@ -36,7 +36,6 @@ const String iluminacaoTopic = "S1/Iluminacao";
 
 const int pinTrig = 32;
 const int pinEcho = 33;
-float distancia;
 Ultrasonic ultrasonic(pinTrig, pinEcho);
 
 
@@ -61,9 +60,9 @@ Ultrasonic ultrasonic(pinTrig, pinEcho);
   }
   mqtt.setCallback(callBack);
   mqtt.subscribe(iluminacaoTopic.c_str());
+  mqtt.subscribe(Presenca3Topic.c_str());
   mqtt.subscribe(Presenca1Topic.c_str());
   mqtt.subscribe(Presenca2Topic.c_str());
-  mqtt.subscribe(Presenca3Topic.c_str());
   Serial.println("\nConectado com sucesso !");
 
   pinMode(pin_led,OUTPUT);
@@ -80,11 +79,10 @@ void loop() {
   
   int distancia = ultrasonic.read();
   Serial.println(distancia);
-  int presencaLed = (distancia < 30)? mqtt.publish(presenca_topic.c_str(), "1") : 0;
+  int presencaLed = (distancia < 10)? mqtt.publish(presenca_topic.c_str(), "1") : 0;
   // mqtt.publish(presenca_topic.c_str(), String(presencaLed).c_str());
-
   mqtt.loop();
-  delay(1000);
+  delay(200);
 
 }
 
@@ -96,7 +94,7 @@ void callBack(char* topic, byte* payload, unsigned int length){
   }
   Serial.printf("Recebido: %s\n",mensagem);
 
-  if(String(topic) == "S1/Iluminacao"){
+  if(strcmp(topic,iluminacaoTopic.c_str()) == 0){
     if(mensagem == "1"){
       digitalWrite(pin_led, HIGH);
     }
@@ -108,15 +106,18 @@ void callBack(char* topic, byte* payload, unsigned int length){
   if(strcmp(topic,Presenca2Topic.c_str()) == 0 && mensagem == "1"){
     servo_inferior.write(120);
     Serial.println("Movendo s_inf 120");
-  }else if(strcmp(topic,Presenca3Topic.c_str()) == 0 && pos_S1 == 120 && mensagem == "1"){
+  }
+  if(strcmp(topic,Presenca3Topic.c_str()) == 0 && pos_S1 == 120 && mensagem == "1"){
     servo_superior.write(60);
     Serial.println("Movendo s_sup 60");
     pos_S1 = 60;
-  }else if(strcmp(topic,Presenca3Topic.c_str()) == 0 && pos_S1 == 60 && mensagem == "1"){
+  }
+  else if(strcmp(topic,Presenca3Topic.c_str()) == 0 && pos_S1 == 60 && mensagem == "1"){
     servo_superior.write(120);
     Serial.println("Movendo s_sup 120");
     pos_S1 = 120;
-  }else if(strcmp(topic,Presenca1Topic.c_str()) == 0 && mensagem == "1"){
+  }
+  if(strcmp(topic,Presenca1Topic.c_str()) == 0 && mensagem == "1"){
     servo_inferior.write(60);
     Serial.println("Movendo s_inf 60");
   }
