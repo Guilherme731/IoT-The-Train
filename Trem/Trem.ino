@@ -6,8 +6,6 @@
 const byte resistorPin = 12;
 const byte caboPin = 13;
 
-int mensagem = 0;
-
 WiFiClientSecure client;
 PubSubClient mqtt(client);
 
