@@ -1,5 +1,5 @@
- #include <WiFiClientSecure.h>
- #include <WiFi.h>
+#include <WiFiClientSecure.h>
+#include <WiFi.h>
 #include <PubSubClient.h>
 #include <ESP32Servo.h>
 #include <Ultrasonic.h>
@@ -24,10 +24,7 @@ const String URL   = "8b46e29e75014bcba8465b77629b065c.s1.eu.hivemq.cloud";
 const int PORT     = 8883;
 const String USR   = "thetrain_esp";
 const String broker_PASS  = "Thetrain123";
-const String servo1_topic = "S3/Servo1";
-const String servo2_topic = "S3/Servo2";
 const String presenca_topic = "S3/Presenca";
-const String presenca = "Presenca";
 
 const String Presenca1Topic = "S2/Presenca1";
 const String Presenca2Topic = "S2/Presenca2";
