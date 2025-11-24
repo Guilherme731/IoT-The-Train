@@ -61,13 +61,13 @@ void loop() {
   int distance = ultrasonic.read();
   int distance2 = ultrasonic2.read();
 
-  if(distance > 30){
+  if(distance < 30){
     mqtt.publish(presenca1Topic.c_str(),String(1).c_str());
   }else{
     mqtt.publish(presenca1Topic.c_str(),String(0).c_str());
   }
 
-  if(distance2 > 30){
+  if(distance2 < 30){
     mqtt.publish(presenca2Topic.c_str(),String(1).c_str());
   }else{
     mqtt.publish(presenca2Topic.c_str(),String(0).c_str());
