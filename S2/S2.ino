@@ -19,13 +19,9 @@ const String URL   = "8b46e29e75014bcba8465b77629b065c.s1.eu.hivemq.cloud";
 const int PORT     = 8883;
 const String USR   = "thetrain_esp";
 const String broker_PASS  = "Thetrain123";
-const String MyTopic = "teste";
-const String OtherTopic = "teste";
 const String iluminacaoTopic = "S1/Iluminacao";
 const String presenca1Topic = "S2/Presenca1";
 const String presenca2Topic = "S2/Presenca2";
-float distanciaPresenca1;
-float distanciaPresenca2;
 
 Ultrasonic ultrasonic(pino_trigger1, pino_echo1);
 Ultrasonic ultrasonic2(pino_trigger2, pino_echo2);
