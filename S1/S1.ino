@@ -14,18 +14,20 @@ const String PASS = "8120gv08";
 const String URL   = "8b46e29e75014bcba8465b77629b065c.s1.eu.hivemq.cloud";
 const int PORT     = 8883;
 const String USR   = "thetrain_esp";
-const String broker_PASS  = "Thetrain123";
-const String TempTopic = "S1/Temp";
-const String UmidTopic = "S1/Umid";
+const String broker_PASS   = "Thetrain123";
+const String TempTopic     = "S1/Temp";
+const String UmidTopic     = "S1/Umid";
 const String PresencaTopic = "S1/Presenca";
-const String LedTopic = "S1/Iluminacao";
+const String LedTopic      = "S1/Iluminacao";
 
 int ldrPin = 34;
 int ledPin = 19;
 int echoPin = 23;
 int trigPin = 22;
 
- Bonezegei_DHT11 dht(2);
+int sensibilidadeLdr = 2500;
+
+ Bonezegei_DHT11 dht(4);
 
 Ultrasonic ultrasonic(trigPin, echoPin);
 
@@ -62,7 +64,7 @@ void loop() {
   dht.getData();
   int valorLdr = analogRead(ldrPin);
   int distance = ultrasonic.read();
-  int acenderLed = (valorLdr > 2800)? 1 : 0;
+  int acenderLed = (valorLdr > sensibilidadeLdr)? 1 : 0;
   int presencaDetectada = (distance > 30)? 0 : 1;
   mqtt.publish(LedTopic.c_str(), String(acenderLed).c_str());
   mqtt.publish(PresencaTopic.c_str(), String(presencaDetectada).c_str());
